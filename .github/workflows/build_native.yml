@@ -1,0 +1,112 @@
+name: Build Windows x86_64 Native MinGW
+on:
+  workflow_dispatch:
+    inputs:
+      MINGW_W64_BRANCH:
+        description: 'MinGW-w64 branch'
+        type: string
+        required: true
+        default: 'master'
+      BINUTILS_BRANCH:
+        description: 'Binutils branch'
+        type: string
+        required: true
+        default: 'binutils-2_42-branch'
+      GCC_BRANCH:
+        description: 'GCC branch'
+        type: string
+        required: true
+        default: 'releases/gcc-14'
+jobs:
+  build_linux:
+    uses: ./.github/workflows/build.yml
+  build_windows:
+    needs: [build_linux]
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Reusable strings
+      id: strings
+      run: |
+        cat << EOF | tee -a "${GITHUB_ENV}"
+        CROSS_PREFIX=x86_64-w64-mingw32
+        SYSROOT=${{ github.workspace }}/${CROSS_PREFIX}
+        TARGET=x86_64-w64-mingw32
+        PREFIX=${{ github.workspace }}/install/mingw-w64-windows
+        CACHE_PATH=${{ github.workspace }}/cache
+        BUILDER_PATH=${{ github.workspace }}/compiler
+        EOF
+        mkdir -p $PREFIX $CACHE_PATH
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y build-essential
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        path: ${{ env.BUILDER_PATH }}
+        merge-multiple: true
+    - name: Clone repositories
+      run: |
+        cd $CACHE_PATH
+        git clone --depth 1 -b "${{ inputs.BINUTILS_BRANCH }}"  https://git.code.sf.net/p/mingw-w64/mingw-w64 mingw-w64
+        git clone --depth 1 -b "${{ inputs.BINUTILS_BRANCH }}" https://sourceware.org/git/binutils-gdb.git binutils
+        git clone --depth 1 -b "${{ inputs.GCC_BRANCH }}" https://gcc.gnu.org/git/gcc.git gcc
+    - name: Set build flags
+      run: |
+        cat << EOF | tee -a "${GITHUB_ENV}"export CC=$TARGET-gcc
+        BUILDER_PREFIX=x86_64-w64-mingw32
+        BUILDER_PATH_PREFIX=${BUILDER_PATH}/${BUILDER_PREFIX}
+        CXX=${BUILDER_PATH_PREFIX}-g++
+        AR=${BUILDER_PATH_PREFIX}-ar
+        RANLIB=${BUILDER_PATH_PREFIX}-ranlib
+        STRIP=${BUILDER_PATH_PREFIX}-strip
+        NM=${BUILDER_PATH_PREFIX}-nm
+        AS=${BUILDER_PATH_PREFIX}-as
+        LD=${BUILDER_PATH_PREFIX}-ld
+        CFLAGS="-O2 -pipe"
+        CXXFLAGS="-O2 -pipe"
+        LDFLAGS="-pipe"
+        EOF
+    - name: Configure and build binutils
+      run: |
+        cd $CACHE_PATH/binutils
+        mkdir build && cd build
+        ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX --with-sysroot=$SYSROOT --disable-multilib --disable-nls
+        make -j$(nproc)
+        make install
+    - name: Configure and build MinGW-w64 headers
+      run: |
+        cd $CACHE_PATH/mingw-w64/mingw-w64-headers
+        mkdir build && cd build
+        ../configure --host=$CROSS_PREFIX --prefix=$PREFIX/$TARGET
+        make install
+    - name: Configure and build MinGW-w64 C Runtime
+      run: |
+        cd $CACHE_PATH/mingw-w64/mingw-w64-crt
+        mkdir build && cd build
+        ../configure --host=$CROSS_PREFIX --prefix=$PREFIX/$TARGET
+        make -j$(nproc)
+        make install
+    - name: Configure and build winpthread
+      run: |
+        cd $CACHE_PATH/mingw-w64/mingw-w64-libraries/winpthreads
+        mkdir build && cd build
+        ../configure --host=$TARGET --prefix=$PREFIX/$TARGET --disable-shared --enable-static
+        make -j$(nproc)
+        make install
+    - name: Configure and build GCC
+      run: |
+        cd $CACHE_PATH/gcc
+        mkdir build && cd build
+        ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX \
+            --enable-languages=c,c++ --disable-multilib --disable-nls \
+            --with-sysroot=$SYSROOT --enable-threads=win32 \
+            --enable-shared --enable-static
+        make -j$(nproc)
+        make install
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: native_mingw_x86_64
+        path: ${{ env.PREFIX }}
+
+
