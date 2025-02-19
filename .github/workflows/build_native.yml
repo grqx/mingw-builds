@@ -61,6 +61,7 @@ jobs:
     - name: Set build flags
       run: |
         cat << EOF | tee -a "${GITHUB_ENV}"
+        GCC_EXEC_PREFIX=${BUILDER_PATH}/libexec/gcc/${BUILDER_PREFIX}/14.2.1/
         CC=${BUILDER_PATH_PREFIX}-gcc
         CXX=${BUILDER_PATH_PREFIX}-g++
         AR=${BUILDER_PATH_PREFIX}-ar
