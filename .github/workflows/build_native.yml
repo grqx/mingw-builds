@@ -22,7 +22,8 @@ jobs:
   #   uses: ./.github/workflows/build.yml
   build_windows:
     # needs: [build_linux]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    # TODO: 22.04
     steps:
     - name: Reusable strings
       id: strings
