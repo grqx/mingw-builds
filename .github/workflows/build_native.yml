@@ -72,9 +72,10 @@ jobs:
         CXXFLAGS="-O2 -pipe"
         LDFLAGS="-pipe"
         EOF
-    - name: dbg
+    - name: Set artifact permission
       run: |
         cd $CACHE_PATH
+        sudo chmod -R a+rx $BUILDER_PATH/bin
         $CC -v
         $CXX -v
         cat << EOF | tee test.c
