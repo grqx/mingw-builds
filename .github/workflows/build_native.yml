@@ -52,6 +52,7 @@ jobs:
         run-id: 13406824267
     - name: Clone repositories
       run: |
+        ls -R $BUILDER_PATH
         cd $CACHE_PATH
         git clone --depth 1 -b "${{ inputs.MINGW_W64_BRANCH }}"  https://git.code.sf.net/p/mingw-w64/mingw-w64 mingw-w64
         git clone --depth 1 -b "${{ inputs.BINUTILS_BRANCH }}" https://sourceware.org/git/binutils-gdb.git binutils
