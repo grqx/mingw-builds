@@ -73,7 +73,8 @@ jobs:
       run: |
         cd $CACHE_PATH/binutils
         mkdir build && cd build
-        ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX --with-sysroot=$SYSROOT --disable-multilib --disable-nls
+        ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX --with-sysroot=$SYSROOT \
+            --disable-multilib --disable-nls --enable-lto --disable-gdb
         make -j$(nproc)
         make install
     - name: Configure and build MinGW-w64 headers
