@@ -34,6 +34,8 @@ jobs:
         PREFIX=${{ github.workspace }}/install/mingw-w64-windows
         CACHE_PATH=${{ github.workspace }}/cache
         BUILDER_PATH=${{ github.workspace }}/compiler
+        BUILDER_PREFIX=x86_64-w64-mingw32
+        BUILDER_PATH_PREFIX=${{ github.workspace }}/compiler/x86_64-w64-mingw32
         EOF
     - name: Install dependencies
       run: |
@@ -57,8 +59,6 @@ jobs:
     - name: Set build flags
       run: |
         cat << EOF | tee -a "${GITHUB_ENV}"export CC=$TARGET-gcc
-        BUILDER_PREFIX=x86_64-w64-mingw32
-        BUILDER_PATH_PREFIX=${BUILDER_PATH}/${BUILDER_PREFIX}
         CXX=${BUILDER_PATH_PREFIX}-g++
         AR=${BUILDER_PATH_PREFIX}-ar
         RANLIB=${BUILDER_PATH_PREFIX}-ranlib
