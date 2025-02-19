@@ -35,7 +35,7 @@ jobs:
         CACHE_PATH=${{ github.workspace }}/cache
         BUILDER_PATH=${{ github.workspace }}/compiler
         BUILDER_PREFIX=x86_64-w64-mingw32
-        BUILDER_PATH_PREFIX=${{ github.workspace }}/compiler/x86_64-w64-mingw32
+        BUILDER_PATH_PREFIX=${{ github.workspace }}/compiler/bin/x86_64-w64-mingw32
         EOF
     - name: Install dependencies
       run: |
