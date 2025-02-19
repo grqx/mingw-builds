@@ -18,10 +18,10 @@ on:
         required: true
         default: 'releases/gcc-14'
 jobs:
-  build_linux:
-    uses: ./.github/workflows/build.yml
+  # build_linux:
+  #   uses: ./.github/workflows/build.yml
   build_windows:
-    needs: [build_linux]
+    # needs: [build_linux]
     runs-on: ubuntu-22.04
     steps:
     - name: Reusable strings
@@ -35,7 +35,8 @@ jobs:
         CACHE_PATH=${{ github.workspace }}/cache
         BUILDER_PATH=${{ github.workspace }}/compiler
         EOF
-        mkdir -p $PREFIX $CACHE_PATH
+        mkdir -p $PREFIX
+        mkdir -p $CACHE_PATH
     - name: Install dependencies
       run: |
         sudo apt update && sudo apt install -y build-essential
@@ -44,6 +45,8 @@ jobs:
       with:
         path: ${{ env.BUILDER_PATH }}
         merge-multiple: true
+        run-id: 13406824267
+        # rm when using fresh builds
     - name: Clone repositories
       run: |
         cd $CACHE_PATH
