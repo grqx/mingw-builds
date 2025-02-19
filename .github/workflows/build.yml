@@ -1,5 +1,5 @@
 name: Build
-on: [workflow_dispatch]
+on: [workflow_dispatch, workflow_call]
 jobs:
   build:
     name: Build MinGW
@@ -7,7 +7,7 @@ jobs:
     steps:
     - name: Install dependencies
       run: |
-        sudo apt-get install -y g++ texinfo flex bison git m4 bzip2 curl make
+        sudo apt-get update && sudo apt-get install -y g++ texinfo flex bison git m4 bzip2 curl make
         curl -o 'mingw-w64-build' 'https://raw.githubusercontent.com/Zeranoe/mingw-w64-build/refs/heads/master/mingw-w64-build'
         sudo chmod a+rx ./mingw-w64-build
         ./mingw-w64-build x86_64 -j $(nproc) -p ${{ github.workspace }}/install_x86_64 -r ${{ github.workspace }}/build_x86_64
