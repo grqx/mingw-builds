@@ -1,0 +1,18 @@
+name: Build
+on: [workflow_dispatch]
+jobs:
+  build:
+    name: Build MinGW
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y g++ texinfo flex bison git m4 bzip2 curl make
+        curl -o 'mingw-w64-build' 'https://raw.githubusercontent.com/Zeranoe/mingw-w64-build/refs/heads/master/mingw-w64-build'
+        sudo chmod a+rx ./mingw-w64-build
+        ./mingw-w64-build x86_64 -j $(nproc) -p ${{ github.workspace }}/install_x86_64 -r ${{ github.workspace }}/build_x86_64
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: mingw_x86_64
+        path: ${{ github.workspace }}/install_x86_64
