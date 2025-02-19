@@ -45,8 +45,9 @@ jobs:
       with:
         name: mingw_x86_64
         path: ${{ env.BUILDER_PATH }}
+        # rm args below when using fresh builds
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         run-id: 13406824267
-        # rm when using fresh builds
     - name: Clone repositories
       run: |
         cd $CACHE_PATH
