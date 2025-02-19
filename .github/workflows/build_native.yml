@@ -52,7 +52,7 @@ jobs:
         run-id: 13406824267
     - name: Clone repositories
       run: |
-        ls -R $BUILDER_PATH
+        ls -R $BUILDER_PATH/bin
         cd $CACHE_PATH
         git clone --depth 1 -b "${{ inputs.MINGW_W64_BRANCH }}"  https://git.code.sf.net/p/mingw-w64/mingw-w64 mingw-w64
         git clone --depth 1 -b "${{ inputs.BINUTILS_BRANCH }}" https://sourceware.org/git/binutils-gdb.git binutils
@@ -72,6 +72,18 @@ jobs:
         CXXFLAGS="-O2 -pipe"
         LDFLAGS="-pipe"
         EOF
+    - name: dbg
+      run: |
+        cd $CACHE_PATH
+        $CC -v
+        $CXX -v
+        cat << EOF | tee test.c
+        #include <stdio.h>
+        int main(void) { printf("Hello, World!"); }
+        EOF
+        $CC test.c -o test $CFLAGS
+        $CXX test.c -o test_cpp $CXXFLAGS
+        ls
     - name: Configure and build binutils
       run: |
         cd $CACHE_PATH/binutils
