@@ -35,8 +35,8 @@ jobs:
         CACHE_PATH=${{ github.workspace }}/cache
         BUILDER_PATH=${{ github.workspace }}/compiler
         EOF
-        mkdir -p $PREFIX
-        mkdir -p $CACHE_PATH
+        mkdir -p ${{ env.PREFIX }}
+        mkdir -p ${{ env.CACHE_PATH }}
     - name: Install dependencies
       run: |
         sudo apt update && sudo apt install -y build-essential
