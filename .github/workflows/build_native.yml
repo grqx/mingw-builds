@@ -68,13 +68,15 @@ jobs:
         -I `realpath x86_64-w64-mingw32/include/c++/14.2.1/x86_64-w64-mingw32`"
         tmp_COMPILER_PATH="$(realpath bin):$(realpath libexec/gcc/x86_64-w64-mingw32/14.2.1):$(realpath x86_64-w64-mingw32/bin)"
         tmp_LIBRARY_PATH="$(realpath x86_64-w64-mingw32/lib):$(realpath lib/gcc/x86_64-w64-mingw32/14.2.1)"
-
+        # NOTE: seems like part of binutils disregards CC and uses CC_FOR_BUID instead
         cat << EOF | tee -a "${GITHUB_ENV}"
         GCC_EXEC_PREFIX=`realpath ${BUILDER_PATH}/lib/gcc`/
         COMPILER_PATH=${tmp_COMPILER_PATH}
         LIBRARY_PATH=${tmp_LIBRARY_PATH}
         CC=${BUILDER_PATH_PREFIX}-gcc
+        CC_FOR_BUILD=${BUILDER_PATH_PREFIX}-gcc
         CXX=${BUILDER_PATH_PREFIX}-g++
+        CXX_FOR_BUILD=${BUILDER_PATH_PREFIX}-g++
         AR=${BUILDER_PATH_PREFIX}-ar
         RANLIB=${BUILDER_PATH_PREFIX}-ranlib
         STRIP=${BUILDER_PATH_PREFIX}-strip
