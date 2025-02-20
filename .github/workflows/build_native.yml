@@ -68,9 +68,7 @@ jobs:
         -I `realpath x86_64-w64-mingw32/include/c++/14.2.1/x86_64-w64-mingw32`"
         tmp_COMPILER_PATH="$(realpath bin):$(realpath libexec/gcc/x86_64-w64-mingw32/14.2.1):$(realpath x86_64-w64-mingw32/bin)"
         tmp_LIBRARY_PATH="$(realpath x86_64-w64-mingw32/lib):$(realpath lib/gcc/x86_64-w64-mingw32/14.2.1)"
-        # NOTE: seems like part of binutils disregards CC and uses CC_FOR_BUID instead
         # NOTE: stuff built by CC_FOR_BUILD needs to be run on the build system, so we should not use cross compilers
-        # NOTE: we can use CFLAGS_FOR_BUILD LDFLAGS_FOR_BUILD
 
         #COMPILER_PATH=${tmp_COMPILER_PATH}
         #LIBRARY_PATH=${tmp_LIBRARY_PATH}
@@ -89,8 +87,11 @@ jobs:
         AS=${BUILDER_PATH_PREFIX}-as
         LD=${BUILDER_PATH_PREFIX}-ld
         CFLAGS=${tmp_c_flags} -O2 -pipe
+        CFLAGS_FOR_BUILD=-O2 -pipe
         CXXFLAGS=${tmp_cc_flags} ${tmp_c_flags} -O2 -pipe
-        LDFLAGS=-pipe ${tmp_ldflags_extra}
+        CXXFLAGS_FOR_BUILD=-O2 -pipe
+        LDFLAGS=${tmp_ldflags_extra} -pipe
+        LDFLAGS_FOR_BUILD=-pipe
         EOF
     - name: Set artifact permission
       run: |
