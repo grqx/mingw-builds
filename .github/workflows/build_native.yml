@@ -79,8 +79,8 @@ jobs:
         NM=${BUILDER_PATH_PREFIX}-nm
         AS=${BUILDER_PATH_PREFIX}-as
         LD=${BUILDER_PATH_PREFIX}-ld
-        CFLAGS=-O2 -pipe ${tmp_c_flags}
-        CXXFLAGS=-O2 -pipe ${tmp_cc_flags} ${tmp_c_flags}
+        CFLAGS=${tmp_c_flags} -O2 -pipe
+        CXXFLAGS=${tmp_cc_flags} ${tmp_c_flags} -O2 -pipe
         LDFLAGS=-pipe ${tmp_ldflags_extra}
         EOF
     - name: Set artifact permission
@@ -93,8 +93,9 @@ jobs:
         #include <stdio.h>
         int main(void) { printf("Hello, World!"); }
         EOF
-        $CC $CFLAGS $LDFLAGS test.c -o test
-        $CXX $CXXFLAGS $LDFLAGS test.c -o test_cpp
+        find -name "cc1"
+        $CC $LDFLAGS $CFLAGS test.c -o test
+        $CXX $LDFLAGS $CXXFLAGS test.c -o test_cpp
         ls
     - name: Configure and build binutils
       run: |
