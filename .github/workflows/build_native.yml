@@ -37,6 +37,7 @@ jobs:
         BUILDER_PATH=${{ github.workspace }}/compiler
         BUILDER_PREFIX=x86_64-w64-mingw32
         BUILDER_PATH_PREFIX=${{ github.workspace }}/compiler/bin/x86_64-w64-mingw32
+        BUILD=x86_64-pc-linux-gnu
         EOF
     - name: Install dependencies
       run: |
@@ -132,7 +133,7 @@ jobs:
       run: |
         cd $CACHE_PATH/binutils
         mkdir build && cd build
-        ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX --with-sysroot=$SYSROOT \
+        ../configure --host=$CROSS_PREFIX --target=$TARGET --build=$BUILD --prefix=$PREFIX --with-sysroot=$SYSROOT \
             --disable-shared --enable-static --disable-multilib --disable-nls --enable-lto --disable-gdb
         echo "[debug] starting to build binutils"
         make V=1 -j$(nproc)
