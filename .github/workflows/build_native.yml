@@ -42,7 +42,8 @@ jobs:
       run: |
         mkdir -p ${{ env.PREFIX }}
         mkdir -p ${{ env.CACHE_PATH }}
-        sudo apt update && sudo apt install -y build-essential flex bison texinfo libgmp-dev libmpfr-dev libmpc-dev wine
+        sudo apt update && sudo apt install -y flex bison texinfo libgmp-dev libmpfr-dev libmpc-dev wine
+        # build-essential
         (sudo dpkg --add-architecture i386 && sudo apt-get install wine32:i386)||echo "Failed to install wine32!"
         # wine is not necessary, only for testing
     - name: Download artifact
@@ -64,7 +65,7 @@ jobs:
         tmp_c_flags="-I `realpath x86_64-w64-mingw32/include`"
         tmp_cc_flags="-I `realpath x86_64-w64-mingw32/include/c++/14.2.1` \
         -I `realpath x86_64-w64-mingw32/include/c++/14.2.1/x86_64-w64-mingw32`"
-        tmp_COMPILER_PATH="$(realpath libexec/gcc/x86_64-w64-mingw32/14.2.1):$(realpath x86_64-w64-mingw32/bin)"
+        tmp_COMPILER_PATH="$(realpath bin):$(realpath libexec/gcc/x86_64-w64-mingw32/14.2.1):$(realpath x86_64-w64-mingw32/bin)"
         tmp_LIBRARY_PATH="$(realpath x86_64-w64-mingw32/lib):$(realpath lib/gcc/x86_64-w64-mingw32/14.2.1)"
 
         cat << EOF | tee -a "${GITHUB_ENV}"
