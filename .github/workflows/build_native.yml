@@ -72,13 +72,15 @@ jobs:
         # NOTE: stuff built by CC_FOR_BUILD needs to be run on the build system, so we should not use cross compilers
         # NOTE: we can use CFLAGS_FOR_BUILD LDFLAGS_FOR_BUILD
 
+        #COMPILER_PATH=${tmp_COMPILER_PATH}
+        #LIBRARY_PATH=${tmp_LIBRARY_PATH}
+        tmp_GCC_EXEC_PREFIX=`realpath ${BUILDER_PATH}/lib/gcc`/
+        tmp_cc="env GCC_EXEC_PREFIX=${tmp_GCC_EXEC_PREFIX} ${BUILDER_PATH_PREFIX}-gcc"
+        tmp_cxx="env GCC_EXEC_PREFIX=${tmp_GCC_EXEC_PREFIX} ${BUILDER_PATH_PREFIX}-g++"
         cat << EOF | tee -a "${GITHUB_ENV}"
-        GCC_EXEC_PREFIX=`realpath ${BUILDER_PATH}/lib/gcc`/
-        COMPILER_PATH=${tmp_COMPILER_PATH}
-        LIBRARY_PATH=${tmp_LIBRARY_PATH}
-        CC=${BUILDER_PATH_PREFIX}-gcc
+        CC=${tmp_cc}
         CC_FOR_BUILD=gcc
-        CXX=${BUILDER_PATH_PREFIX}-g++
+        CXX=${tmp_cxx}
         CXX_FOR_BUILD=g++
         AR=${BUILDER_PATH_PREFIX}-ar
         RANLIB=${BUILDER_PATH_PREFIX}-ranlib
