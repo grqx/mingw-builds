@@ -58,15 +58,19 @@ jobs:
         ls -R $BUILDER_PATH/bin
         cd ${BUILDER_PATH}
         tmp_ldflags_extra="-B `realpath libexec/gcc/x86_64-w64-mingw32/14.2.1` \
-        -B `realpath lib/gcc/x86_64-w64-mingw32/14.2.1/` \
+        -B `realpath lib/gcc/x86_64-w64-mingw32/14.2.1` \
         -B `realpath x86_64-w64-mingw32/bin` \
         -B `realpath x86_64-w64-mingw32/lib`"
         tmp_c_flags="-I `realpath x86_64-w64-mingw32/include`"
         tmp_cc_flags="-I `realpath x86_64-w64-mingw32/include/c++/14.2.1` \
         -I `realpath x86_64-w64-mingw32/include/c++/14.2.1/x86_64-w64-mingw32`"
+        tmp_COMPILER_PATH="$(realpath libexec/gcc/x86_64-w64-mingw32/14.2.1):$(realpath x86_64-w64-mingw32/bin)"
+        tmp_LIBRARY_PATH="$(realpath x86_64-w64-mingw32/lib):$(realpath lib/gcc/x86_64-w64-mingw32/14.2.1)"
 
         cat << EOF | tee -a "${GITHUB_ENV}"
         GCC_EXEC_PREFIX=`realpath ${BUILDER_PATH}/lib/gcc`/
+        COMPILER_PATH=${tmp_COMPILER_PATH}
+        LIBRARY_PATH=${tmp_LIBRARY_PATH}
         CC=${BUILDER_PATH_PREFIX}-gcc
         CXX=${BUILDER_PATH_PREFIX}-g++
         AR=${BUILDER_PATH_PREFIX}-ar
@@ -120,9 +124,9 @@ jobs:
     - name: Clone repositories
       run: |
         cd $CACHE_PATH
-        git clone --depth 1 -b "${{ inputs.MINGW_W64_BRANCH }}"  https://git.code.sf.net/p/mingw-w64/mingw-w64 mingw-w64
-        git clone --depth 1 -b "${{ inputs.BINUTILS_BRANCH }}" https://sourceware.org/git/binutils-gdb.git binutils
-        git clone --depth 1 -b "${{ inputs.GCC_BRANCH }}" https://gcc.gnu.org/git/gcc.git gcc
+        git clone --progress --depth 1 -b "${{ inputs.MINGW_W64_BRANCH }}"  https://git.code.sf.net/p/mingw-w64/mingw-w64 mingw-w64
+        git clone --progress --depth 1 -b "${{ inputs.BINUTILS_BRANCH }}" https://sourceware.org/git/binutils-gdb.git binutils
+        git clone --progress --depth 1 -b "${{ inputs.GCC_BRANCH }}" https://gcc.gnu.org/git/gcc.git gcc
     - name: Configure and build binutils
       run: |
         cd $CACHE_PATH/binutils
