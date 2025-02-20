@@ -1,4 +1,4 @@
-name: Build Windows x86_64 Native MinGW
+  name: Build Windows x86_64 Native MinGW
 on:
   workflow_dispatch:
     inputs:
@@ -42,7 +42,8 @@ jobs:
       run: |
         mkdir -p ${{ env.PREFIX }}
         mkdir -p ${{ env.CACHE_PATH }}
-        sudo apt update && sudo apt install -y build-essential flex bison texinfo libgmp-dev libmpfr-dev libmpc-dev
+        sudo apt update && sudo apt install -y build-essential flex bison texinfo libgmp-dev libmpfr-dev libmpc-dev wine
+        # wine is not necessary, only for testing
     - name: Download artifact
       uses: actions/download-artifact@v4
       with:
@@ -111,9 +112,9 @@ jobs:
 
         find $BUILDER_PATH -name "cc1"
         $CC $LDFLAGS $CFLAGS test.c -o test
-        ./test.exe
+        wine ./test.exe
         $CXX $LDFLAGS $CXXFLAGS tthread.cpp -o test_cpp
-        ./test_cpp.exe
+        wine ./test_cpp.exe
         ls
     - name: Clone repositories
       run: |
