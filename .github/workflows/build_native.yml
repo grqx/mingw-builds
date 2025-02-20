@@ -86,14 +86,14 @@ jobs:
     - name: Set artifact permission
       run: |
         cd $CACHE_PATH
-        sudo chmod -R a+rx $BUILDER_PATH/bin
+        sudo chmod -R a+rx $BUILDER_PATH/
         $CC -v
         $CXX -v
         cat << EOF | tee test.c
         #include <stdio.h>
         int main(void) { printf("Hello, World!"); }
         EOF
-        find -name "cc1"
+        find $BUILDER_PATH -name "cc1"
         $CC $LDFLAGS $CFLAGS test.c -o test
         $CXX $LDFLAGS $CXXFLAGS test.c -o test_cpp
         ls
