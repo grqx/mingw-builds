@@ -69,6 +69,9 @@ jobs:
         tmp_COMPILER_PATH="$(realpath bin):$(realpath libexec/gcc/x86_64-w64-mingw32/14.2.1):$(realpath x86_64-w64-mingw32/bin)"
         tmp_LIBRARY_PATH="$(realpath x86_64-w64-mingw32/lib):$(realpath lib/gcc/x86_64-w64-mingw32/14.2.1)"
         # NOTE: seems like part of binutils disregards CC and uses CC_FOR_BUID instead
+        # NOTE: stuff built by CC_FOR_BUILD needs to be run on the build system, so we should not use cross compilers
+        # NOTE: we can use CFLAGS_FOR_BUILD LDFLAGS_FOR_BUILD
+
         cat << EOF | tee -a "${GITHUB_ENV}"
         GCC_EXEC_PREFIX=`realpath ${BUILDER_PATH}/lib/gcc`/
         COMPILER_PATH=${tmp_COMPILER_PATH}
