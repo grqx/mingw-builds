@@ -77,9 +77,9 @@ jobs:
         COMPILER_PATH=${tmp_COMPILER_PATH}
         LIBRARY_PATH=${tmp_LIBRARY_PATH}
         CC=${BUILDER_PATH_PREFIX}-gcc
-        CC_FOR_BUILD=${BUILDER_PATH_PREFIX}-gcc
+        CC_FOR_BUILD=gcc
         CXX=${BUILDER_PATH_PREFIX}-g++
-        CXX_FOR_BUILD=${BUILDER_PATH_PREFIX}-g++
+        CXX_FOR_BUILD=g++
         AR=${BUILDER_PATH_PREFIX}-ar
         RANLIB=${BUILDER_PATH_PREFIX}-ranlib
         STRIP=${BUILDER_PATH_PREFIX}-strip
@@ -99,6 +99,13 @@ jobs:
 
         $CXX -v
         $CXX -print-prog-name=cc1
+
+        $CC_FOR_BUILD -v
+        $CC_FOR_BUILD -print-prog-name=cc1
+
+        $CXX_FOR_BUILD -v
+        $CXX_FOR_BUILD -print-prog-name=cc1
+
         cat << EOF | tee test.c
         #include <stdio.h>
         int main(void) { printf("Hello, World!\n"); }
@@ -127,6 +134,9 @@ jobs:
         wine ./test.exe
         $CXX $LDFLAGS $CXXFLAGS tthread.cpp -o test_cpp
         wine ./test_cpp.exe
+
+        $CC_FOR_BUILD $LDFLAGS_FOR_BUILD $CFLAGS_FOR_BUILD test.c -o test
+        ./test
         ls
     - name: Clone repositories
       run: |
