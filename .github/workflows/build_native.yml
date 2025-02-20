@@ -60,6 +60,14 @@ jobs:
         git clone --depth 1 -b "${{ inputs.GCC_BRANCH }}" https://gcc.gnu.org/git/gcc.git gcc
     - name: Set build flags
       run: |
+        tmp_ldflags_extra="-B `realpath libexec/gcc/x86_64-w64-mingw32/14.2.1` \
+        -B `realpath lib/gcc/x86_64-w64-mingw32/14.2.1/` \
+        -B `realpath x86_64-w64-mingw32/bin` \
+        -B `realpath x86_64-w64-mingw32/lib`"
+        tmp_c_flags="-I `realpath x86_64-w64-mingw32/include`"
+        tmp_cc_flags="-I `realpath x86_64-w64-mingw32/include/c++/14.2.1` \
+        -I `realpath x86_64-w64-mingw32/include/c++/14.2.1/x86_64-w64-mingw32`"
+
         cat << EOF | tee -a "${GITHUB_ENV}"
         GCC_EXEC_PREFIX=`realpath ${BUILDER_PATH}/lib/gcc`/
         CC=${BUILDER_PATH_PREFIX}-gcc
@@ -70,9 +78,9 @@ jobs:
         NM=${BUILDER_PATH_PREFIX}-nm
         AS=${BUILDER_PATH_PREFIX}-as
         LD=${BUILDER_PATH_PREFIX}-ld
-        CFLAGS=-O2 -pipe
-        CXXFLAGS=-O2 -pipe
-        LDFLAGS=-pipe
+        CFLAGS=-O2 -pipe ${tmp_c_flags}
+        CXXFLAGS=-O2 -pipe ${tmp_cc_flags} ${tmp_c_flags}
+        LDFLAGS=-pipe ${tmp_ldflags_extra}
         EOF
     - name: Set artifact permission
       run: |
