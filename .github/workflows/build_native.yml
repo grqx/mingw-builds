@@ -82,14 +82,38 @@ jobs:
         cd $CACHE_PATH
         sudo chmod -R a+rx $BUILDER_PATH/
         $CC -v
+        $CC -print-prog-name=cc1
+
         $CXX -v
+        $CXX -print-prog-name=cc1
         cat << EOF | tee test.c
         #include <stdio.h>
         int main(void) { printf("Hello, World!"); }
         EOF
+
+        cat << EOF | tee tthread.cpp
+        #include <iostream>
+        #include <stddef.h>
+        #include <thread>
+        #include <vector>
+        
+        void worker(int n) {
+                std::cout << "Hello, thread " << n << "!\n";
+        }
+        
+        int main() {
+                std::vector<std::thread> ts;
+                for (int i = 0; i < 10; ++i)
+                        ts.push_back(std::thread{worker, i});
+                for (auto &&t : ts) t.join();
+        }
+        EOF
+
         find $BUILDER_PATH -name "cc1"
         $CC $LDFLAGS $CFLAGS test.c -o test
-        $CXX $LDFLAGS $CXXFLAGS test.c -o test_cpp
+        ./test.exe
+        $CXX $LDFLAGS $CXXFLAGS tthread.cpp -o test_cpp
+        ./test_cpp.exe
         ls
     - name: Clone repositories
       run: |
