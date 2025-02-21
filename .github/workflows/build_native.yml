@@ -61,9 +61,9 @@ jobs:
         #make wrapper scripts to warn when cxx_for_build is called
         cat << EOF >> cxx4bld.sh
         #!/bin/bash
-        echo "[debug] $0 received $@"
+        echo "[debug] cxx4bld received $*"
         g++ "$@"
-        echo "[debug] $0 finished compiling $@"
+        echo "[debug] cxx4bld finished compiling $*"
         EOF
         tmp_ldflags_extra="-B `realpath libexec/gcc/x86_64-w64-mingw32/14.2.1` \
         -B `realpath lib/gcc/x86_64-w64-mingw32/14.2.1` \
