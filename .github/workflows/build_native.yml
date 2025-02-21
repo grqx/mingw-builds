@@ -174,7 +174,8 @@ jobs:
         ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX --build="$BUILD" \
             --enable-languages=c,c++ --disable-multilib --disable-nls \
             --with-sysroot=$SYSROOT --enable-threads=posix \
-            --enable-shared --enable-static
+            --enable-static \
+            --disable-shared  # --enable-shared
         make -j$(nproc) all-gcc
         make install-gcc
     - name: Configure and build MinGW-w64 C Runtime
