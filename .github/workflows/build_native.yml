@@ -44,8 +44,6 @@ jobs:
         mkdir -p ${{ env.PREFIX }}
         mkdir -p ${{ env.CACHE_PATH }}
         sudo apt update && sudo apt install -y flex bison texinfo libgmp-dev libmpfr-dev libmpc-dev wine
-        # build-essential
-        (sudo dpkg --add-architecture i386 && sudo apt-get install wine32:i386)||echo "Failed to install wine32!"
         # wine is not necessary, only for testing
     - name: Download artifact
       uses: actions/download-artifact@v4
@@ -140,6 +138,8 @@ jobs:
 
         $CC_FOR_BUILD $LDFLAGS_FOR_BUILD $CFLAGS_FOR_BUILD test.c -o test
         ./test
+        $CXX_FOR_BUILD $LDFLAGS_FOR_BUILD $CXXFLAGS_FOR_BUILD tthread.cpp -o test_cpp
+        ./test_cpp
         ls
     - name: Clone repositories
       run: |
@@ -167,11 +167,11 @@ jobs:
     - name: Configure and build all-gcc
       run: |
         cd $CACHE_PATH/gcc
-        mkdir build && cd build
         ./contrib/download_prerequisites
         #for i in mpc isl mpfr gmp; do
         #    ln -s "$SRC_PATH/gcc/$i" "$SRC_PATH/binutils/$i"
         #done
+        mkdir build && cd build
         ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX \
             --enable-languages=c,c++ --disable-multilib --disable-nls \
             --with-sysroot=$SYSROOT --enable-threads=posix \
