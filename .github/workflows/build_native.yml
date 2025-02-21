@@ -164,11 +164,23 @@ jobs:
             --with-default-msvcrt=msvcrt
         make install
         # todo: all-gcc
+    - name: Configure and build all-gcc
+      run: |
+        cd $CACHE_PATH/gcc
+        mkdir build && cd build
+        ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX \
+            --enable-languages=c,c++ --disable-multilib --disable-nls \
+            --with-sysroot=$SYSROOT --enable-threads=win32 \
+            --enable-shared --enable-static
+        make -j$(nproc) all-gcc
+        make install-gcc
     - name: Configure and build MinGW-w64 C Runtime
       run: |
         cd $CACHE_PATH/mingw-w64/mingw-w64-crt
         mkdir build && cd build
-        ../configure --host=$CROSS_PREFIX --prefix=$PREFIX/$TARGET
+        ../configure --host=$CROSS_PREFIX --prefix=$PREFIX/$TARGET --build="$BUILD" \
+            --with-default-msvcrt=msvcrt　--with-sysroot="$SYSROOT" \
+            --enable-lib64 --disable-lib32
         make -j$(nproc)
         make install
     - name: Configure and build winpthread
@@ -178,14 +190,10 @@ jobs:
         ../configure --host=$TARGET --prefix=$PREFIX/$TARGET --disable-shared --enable-static
         make -j$(nproc)
         make install
-    - name: Configure and build GCC
+    - name: Build GCC
       run: |
         cd $CACHE_PATH/gcc
         mkdir build && cd build
-        ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX \
-            --enable-languages=c,c++ --disable-multilib --disable-nls \
-            --with-sysroot=$SYSROOT --enable-threads=win32 \
-            --enable-shared --enable-static
         make -j$(nproc)
         make install
     - name: Upload artifacts
