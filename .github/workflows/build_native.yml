@@ -78,15 +78,14 @@ jobs:
 
         #COMPILER_PATH=${tmp_COMPILER_PATH}
         #LIBRARY_PATH=${tmp_LIBRARY_PATH}
-        #CC_FOR_BUILD=gcc
-        #CXX_FOR_BUILD=`realpath cxx4bld.sh`
-        # do not use cc/cxx4bld: there is likely a bug(?) in gcc/libcpp: it compiles libcpp with CXX_FOR_BUILD
         tmp_GCC_EXEC_PREFIX=`realpath ${BUILDER_PATH}/lib/gcc`/
         tmp_cc="env GCC_EXEC_PREFIX=${tmp_GCC_EXEC_PREFIX} ${BUILDER_PATH_PREFIX}-gcc"
         tmp_cxx="env GCC_EXEC_PREFIX=${tmp_GCC_EXEC_PREFIX} ${BUILDER_PATH_PREFIX}-g++"
         cat << EOF | tee -a "${GITHUB_ENV}"
         CC=${tmp_cc}
+        CC_FOR_BUILD=gcc
         CXX=${tmp_cxx}
+        CXX_FOR_BUILD=`realpath cxx4bld.sh`
         AR=${BUILDER_PATH_PREFIX}-ar
         RANLIB=${BUILDER_PATH_PREFIX}-ranlib
         STRIP=${BUILDER_PATH_PREFIX}-strip
@@ -185,6 +184,8 @@ jobs:
             --with-sysroot=$SYSROOT --enable-threads=posix \
             --enable-static \
             --enable-shared
+        # seems like theres some sort of bug, libcpp uses cxx4bld instead of cxx
+        CXX_FOR_BUILD="$CXX" CXXFLAGS_FOR_BUILD="$CXXFLAGS" LDFLAGS_FOR_BUILD="$LDFLAGS" \
         make -j$(nproc) all-gcc
         make install-gcc
     - name: Configure and build MinGW-w64 C Runtime
