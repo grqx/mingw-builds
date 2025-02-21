@@ -75,17 +75,16 @@ jobs:
         tmp_COMPILER_PATH="$(realpath bin):$(realpath libexec/gcc/x86_64-w64-mingw32/14.2.1):$(realpath x86_64-w64-mingw32/bin)"
         tmp_LIBRARY_PATH="$(realpath x86_64-w64-mingw32/lib):$(realpath lib/gcc/x86_64-w64-mingw32/14.2.1)"
         # NOTE: stuff built by CC_FOR_BUILD needs to be run on the build system, so we should not use cross compilers
-
-        #COMPILER_PATH=${tmp_COMPILER_PATH}
-        #LIBRARY_PATH=${tmp_LIBRARY_PATH}
         tmp_GCC_EXEC_PREFIX=`realpath ${BUILDER_PATH}/lib/gcc`/
         cc_or_cxx_envs="GCC_EXEC_PREFIX=${tmp_GCC_EXEC_PREFIX} \
         C_INCLUDE_PATH=`realpath x86_64-w64-mingw32/include` \
         CPLUS_INCLUDE_PATH=`realpath x86_64-w64-mingw32/include/c++/14.2.1`:`realpath x86_64-w64-mingw32/include/c++/14.2.1/x86_64-w64-mingw32` \
         COMPILER_PATH=${tmp_COMPILER_PATH} \
         LIBRARY_PATH=${tmp_LIBRARY_PATH}"
+
         tmp_cc="env ${cc_or_cxx_envs} ${BUILDER_PATH_PREFIX}-gcc ${tmp_ldflags_extra}"
         tmp_cxx="env ${cc_or_cxx_envs} ${BUILDER_PATH_PREFIX}-g++ ${tmp_ldflags_extra}"
+
         cat << EOF | tee -a "${GITHUB_ENV}"
         CC=${tmp_cc}
         CC_FOR_BUILD=gcc
@@ -97,6 +96,7 @@ jobs:
         NM=${BUILDER_PATH_PREFIX}-nm
         AS=${BUILDER_PATH_PREFIX}-as
         LD=${BUILDER_PATH_PREFIX}-ld
+        RC=${BUILDER_PATH_PREFIX}-windres
         CFLAGS=-O2 -pipe
         CFLAGS_FOR_BUILD=-O2 -pipe
         CXXFLAGS=-O2 -pipe
@@ -189,8 +189,6 @@ jobs:
             --with-sysroot=$SYSROOT --enable-threads=posix \
             --enable-static \
             --enable-shared
-        # seems like theres some sort of bug, libcpp uses cxx4bld instead of cxx
-        CXX_FOR_BUILD="$CXX" CXXFLAGS_FOR_BUILD="$CXXFLAGS" LDFLAGS_FOR_BUILD="$LDFLAGS" \
         make -j$(nproc) all-gcc
         make install-gcc
     - name: Configure and build MinGW-w64 C Runtime
