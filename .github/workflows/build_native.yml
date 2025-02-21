@@ -57,6 +57,14 @@ jobs:
       run: |
         ls -R $BUILDER_PATH/bin
         cd ${BUILDER_PATH}
+
+        #make wrapper scripts to warn when cxx_for_build is called
+        cat << EOF >> cxx4bld.sh
+        #!/bin/bash
+        echo "[debug] $0 received $@"
+        g++ "$@"
+        echo "[debug] $0 finished compiling $@"
+        EOF
         tmp_ldflags_extra="-B `realpath libexec/gcc/x86_64-w64-mingw32/14.2.1` \
         -B `realpath lib/gcc/x86_64-w64-mingw32/14.2.1` \
         -B `realpath x86_64-w64-mingw32/bin` \
@@ -77,7 +85,7 @@ jobs:
         CC=${tmp_cc}
         CC_FOR_BUILD=gcc
         CXX=${tmp_cxx}
-        CXX_FOR_BUILD=g++
+        CXX_FOR_BUILD=`realpath cxx4bld.sh`
         AR=${BUILDER_PATH_PREFIX}-ar
         RANLIB=${BUILDER_PATH_PREFIX}-ranlib
         STRIP=${BUILDER_PATH_PREFIX}-strip
@@ -175,7 +183,7 @@ jobs:
             --enable-languages=c,c++ --disable-multilib --disable-nls \
             --with-sysroot=$SYSROOT --enable-threads=posix \
             --enable-static \
-            --disable-shared  # --enable-shared
+            --enable-shared
         make -j$(nproc) all-gcc
         make install-gcc
     - name: Configure and build MinGW-w64 C Runtime
