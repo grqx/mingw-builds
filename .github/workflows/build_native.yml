@@ -79,8 +79,13 @@ jobs:
         #COMPILER_PATH=${tmp_COMPILER_PATH}
         #LIBRARY_PATH=${tmp_LIBRARY_PATH}
         tmp_GCC_EXEC_PREFIX=`realpath ${BUILDER_PATH}/lib/gcc`/
-        tmp_cc="env GCC_EXEC_PREFIX=${tmp_GCC_EXEC_PREFIX} ${BUILDER_PATH_PREFIX}-gcc"
-        tmp_cxx="env GCC_EXEC_PREFIX=${tmp_GCC_EXEC_PREFIX} ${BUILDER_PATH_PREFIX}-g++"
+        cc_or_cxx_envs="GCC_EXEC_PREFIX=${tmp_GCC_EXEC_PREFIX} \
+        C_INCLUDE_PATH=`realpath x86_64-w64-mingw32/include` \
+        CPLUS_INCLUDE_PATH=`realpath x86_64-w64-mingw32/include/c++/14.2.1`:`realpath x86_64-w64-mingw32/include/c++/14.2.1/x86_64-w64-mingw32` \
+        COMPILER_PATH=${tmp_COMPILER_PATH} \
+        LIBRARY_PATH=${tmp_LIBRARY_PATH}"
+        tmp_cc="env ${cc_or_cxx_envs} ${BUILDER_PATH_PREFIX}-gcc ${tmp_ldflags_extra}"
+        tmp_cxx="env ${cc_or_cxx_envs} ${BUILDER_PATH_PREFIX}-g++ ${tmp_ldflags_extra}"
         cat << EOF | tee -a "${GITHUB_ENV}"
         CC=${tmp_cc}
         CC_FOR_BUILD=gcc
@@ -92,11 +97,11 @@ jobs:
         NM=${BUILDER_PATH_PREFIX}-nm
         AS=${BUILDER_PATH_PREFIX}-as
         LD=${BUILDER_PATH_PREFIX}-ld
-        CFLAGS=${tmp_c_flags} -O2 -pipe
+        CFLAGS=-O2 -pipe
         CFLAGS_FOR_BUILD=-O2 -pipe
-        CXXFLAGS=${tmp_cc_flags} ${tmp_c_flags} -O2 -pipe
+        CXXFLAGS=-O2 -pipe
         CXXFLAGS_FOR_BUILD=-O2 -pipe
-        LDFLAGS=${tmp_ldflags_extra} -pipe
+        LDFLAGS=-pipe
         LDFLAGS_FOR_BUILD=-pipe
         EOF
     - name: Set artifact permission
