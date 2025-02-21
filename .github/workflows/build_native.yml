@@ -163,7 +163,6 @@ jobs:
         ../configure --host=$CROSS_PREFIX --prefix=$PREFIX/$TARGET --build=$BUILD \
             --with-default-msvcrt=msvcrt
         make install
-        # todo: all-gcc
     - name: Configure and build all-gcc
       run: |
         cd $CACHE_PATH/gcc
