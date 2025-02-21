@@ -11,7 +11,7 @@ on:
         description: 'Binutils branch'
         type: string
         required: true
-        default: 'binutils-2_42-branch'
+        default: 'binutils-2_44-branch'
       GCC_BRANCH:
         description: 'GCC branch'
         type: string
@@ -168,9 +168,13 @@ jobs:
       run: |
         cd $CACHE_PATH/gcc
         mkdir build && cd build
+        ./contrib/download_prerequisites
+        #for i in mpc isl mpfr gmp; do
+        #    ln -s "$SRC_PATH/gcc/$i" "$SRC_PATH/binutils/$i"
+        #done
         ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX \
             --enable-languages=c,c++ --disable-multilib --disable-nls \
-            --with-sysroot=$SYSROOT --enable-threads=win32 \
+            --with-sysroot=$SYSROOT --enable-threads=posix \
             --enable-shared --enable-static
         make -j$(nproc) all-gcc
         make install-gcc
