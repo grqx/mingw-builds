@@ -78,14 +78,15 @@ jobs:
 
         #COMPILER_PATH=${tmp_COMPILER_PATH}
         #LIBRARY_PATH=${tmp_LIBRARY_PATH}
+        #CC_FOR_BUILD=gcc
+        #CXX_FOR_BUILD=`realpath cxx4bld.sh`
+        # do not use cc/cxx4bld: there is likely a bug(?) in gcc/libcpp: it compiles libcpp with CXX_FOR_BUILD
         tmp_GCC_EXEC_PREFIX=`realpath ${BUILDER_PATH}/lib/gcc`/
         tmp_cc="env GCC_EXEC_PREFIX=${tmp_GCC_EXEC_PREFIX} ${BUILDER_PATH_PREFIX}-gcc"
         tmp_cxx="env GCC_EXEC_PREFIX=${tmp_GCC_EXEC_PREFIX} ${BUILDER_PATH_PREFIX}-g++"
         cat << EOF | tee -a "${GITHUB_ENV}"
         CC=${tmp_cc}
-        CC_FOR_BUILD=gcc
         CXX=${tmp_cxx}
-        CXX_FOR_BUILD=`realpath cxx4bld.sh`
         AR=${BUILDER_PATH_PREFIX}-ar
         RANLIB=${BUILDER_PATH_PREFIX}-ranlib
         STRIP=${BUILDER_PATH_PREFIX}-strip
@@ -109,11 +110,11 @@ jobs:
         $CXX -v
         $CXX -print-prog-name=cc1
 
-        $CC_FOR_BUILD -v
-        $CC_FOR_BUILD -print-prog-name=cc1
+        ${CC_FOR_BUILD:-gcc} -v
+        ${CC_FOR_BUILD:-gcc} -print-prog-name=cc1
 
-        $CXX_FOR_BUILD -v
-        $CXX_FOR_BUILD -print-prog-name=cc1
+        ${CXX_FOR_BUILD:-g++} -v
+        ${CXX_FOR_BUILD:-g++} -print-prog-name=cc1
 
         cat << EOF | tee test.c
         #include <stdio.h>
@@ -144,9 +145,9 @@ jobs:
         $CXX $LDFLAGS $CXXFLAGS tthread.cpp -o test_cpp
         wine ./test_cpp.exe
 
-        $CC_FOR_BUILD $LDFLAGS_FOR_BUILD $CFLAGS_FOR_BUILD test.c -o test
+        ${CC_FOR_BUILD:-gcc} $LDFLAGS_FOR_BUILD $CFLAGS_FOR_BUILD test.c -o test
         ./test
-        $CXX_FOR_BUILD $LDFLAGS_FOR_BUILD $CXXFLAGS_FOR_BUILD tthread.cpp -o test_cpp
+        ${CXX_FOR_BUILD:-g++} $LDFLAGS_FOR_BUILD $CXXFLAGS_FOR_BUILD tthread.cpp -o test_cpp
         ./test_cpp
         ls
     - name: Clone repositories
