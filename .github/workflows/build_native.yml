@@ -201,6 +201,9 @@ jobs:
         ../configure --host=$CROSS_PREFIX --prefix=$PREFIX/$TARGET --build="$BUILD" \
             --with-default-msvcrt=msvcrt --with-sysroot="$PREFIX/$TARGET" \
             --enable-lib64 --disable-lib32
+        find $CACHE_PATH -name 'libapi-ms-win-core-path-l1-1-0.a'
+        find $PREFIX -name 'libapi-ms-win-core-path-l1-1-0.a'
+        exit 1
         make -j$(nproc)
         make install
     - name: Configure and build winpthread
