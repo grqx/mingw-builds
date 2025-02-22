@@ -213,8 +213,8 @@ jobs:
         make install
     - name: Build GCC
       run: |
-        cd $CACHE_PATH/gcc
-        mkdir build && cd build
+        cd $CACHE_PATH/gcc/build
+        # the dir is already created
         make -j$(nproc)
         make install
     - name: Upload artifacts
