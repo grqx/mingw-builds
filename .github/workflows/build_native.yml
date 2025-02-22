@@ -183,6 +183,14 @@ jobs:
       run: |
         cd $CACHE_PATH/gcc
         ./contrib/download_prerequisites
+        echo "gmp::::-"
+        find gmp -maxdepth 2 -ls
+        echo "mpfr::::-"
+        find mpfr -maxdepth 2 -ls
+        echo "mpc::::-"
+        find mpc -maxdepth 2 -ls
+        echo "thisDir::::-this"
+        find . -maxdepth 2 -ls
         #for i in mpc isl mpfr gmp; do
         #    ln -s "$SRC_PATH/gcc/$i" "$SRC_PATH/binutils/$i"
         #done
