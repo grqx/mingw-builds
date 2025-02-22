@@ -225,6 +225,8 @@ jobs:
         # the dir is already created
         export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CACHE_PATH/gcc/gmp/lib:$CACHE_PATH/gcc/mpfr/lib:$CACHE_PATH/gcc/mpc/lib"
         make -j$(nproc)
+        echo "gcc_cfg_log::::-"
+        cat config.log || echo "Failed to find GCC cfg log"
         make install
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
