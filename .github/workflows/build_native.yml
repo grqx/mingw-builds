@@ -28,10 +28,12 @@ jobs:
     - name: Reusable strings
       id: strings
       run: |
+        tmp_CROSS_PREFIX=x86_64-w64-mingw32
+        tmp_TARGET_ARCH=x86_64
         cat << EOF | tee -a "${GITHUB_ENV}"
-        CROSS_PREFIX=x86_64-w64-mingw32
-        SYSROOT=${{ github.workspace }}/${CROSS_PREFIX}
-        TARGET=x86_64-w64-mingw32
+        CROSS_PREFIX={tmp_CROSS_PREFIX}
+        SYSROOT=${{ github.workspace }}/${tmp_CROSS_PREFIX}
+        TARGET=${tmp_TARGET_ARCH}-w64-mingw32
         PREFIX=${{ github.workspace }}/install/mingw-w64-windows
         CACHE_PATH=${{ github.workspace }}/cache
         BUILDER_PATH=${{ github.workspace }}/compiler
@@ -164,7 +166,7 @@ jobs:
       run: |
         cd $CACHE_PATH/binutils
         mkdir build && cd build
-        ../configure --host=$CROSS_PREFIX --target=$TARGET --build=$BUILD --prefix=$PREFIX --with-sysroot=$SYSROOT \
+        ../configure --host=$CROSS_PREFIX --target=$TARGET --build=$BUILD --prefix=$PREFIX --with-sysroot=$PREFIX \
             --disable-shared --enable-static --disable-multilib --disable-nls --enable-lto --disable-gdb
         echo "[debug] starting to build binutils"
         make V=1 -j$(nproc)
@@ -187,7 +189,7 @@ jobs:
         export PATH="$PATH:$BUILDER_PATH/bin"
         ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX --build="$BUILD" \
             --enable-languages=c,c++ --disable-multilib --disable-nls \
-            --with-sysroot=$SYSROOT --enable-threads=posix \
+            --enable-threads=posix \
             --enable-static \
             --enable-shared
         make -j$(nproc) all-gcc
@@ -197,7 +199,7 @@ jobs:
         cd $CACHE_PATH/mingw-w64/mingw-w64-crt
         mkdir build && cd build
         ../configure --host=$CROSS_PREFIX --prefix=$PREFIX/$TARGET --build="$BUILD" \
-            --with-default-msvcrt=msvcrt　--with-sysroot="$SYSROOT" \
+            --with-default-msvcrt=msvcrt --with-sysroot="$PREFIX/$TARGET" \
             --enable-lib64 --disable-lib32
         make -j$(nproc)
         make install
@@ -219,5 +221,3 @@ jobs:
       with:
         name: native_mingw_x86_64
         path: ${{ env.PREFIX }}
-
-
