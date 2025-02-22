@@ -31,7 +31,7 @@ jobs:
         tmp_CROSS_PREFIX=x86_64-w64-mingw32
         tmp_TARGET_ARCH=x86_64
         cat << EOF | tee -a "${GITHUB_ENV}"
-        CROSS_PREFIX={tmp_CROSS_PREFIX}
+        CROSS_PREFIX=${tmp_CROSS_PREFIX}
         SYSROOT=${{ github.workspace }}/${tmp_CROSS_PREFIX}
         TARGET=${tmp_TARGET_ARCH}-w64-mingw32
         PREFIX=${{ github.workspace }}/install/mingw-w64-windows
