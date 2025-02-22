@@ -99,6 +99,7 @@ jobs:
         AS=${BUILDER_PATH_PREFIX}-as
         LD=${BUILDER_PATH_PREFIX}-ld
         RC=${BUILDER_PATH_PREFIX}-windres
+        DLLTOOL=${BUILDER_PATH_PREFIX}-dlltool
         CFLAGS=-O2 -pipe
         CFLAGS_FOR_BUILD=-O2 -pipe
         CXXFLAGS=-O2 -pipe
@@ -201,9 +202,6 @@ jobs:
         ../configure --host=$CROSS_PREFIX --prefix=$PREFIX/$TARGET --build="$BUILD" \
             --with-default-msvcrt=msvcrt --with-sysroot="$PREFIX/$TARGET" \
             --enable-lib64 --disable-lib32
-        find $CACHE_PATH -name 'libapi-ms-win-core-path-l1-1-0.a'
-        find $PREFIX -name 'libapi-ms-win-core-path-l1-1-0.a'
-        exit 1
         make -j$(nproc)
         make install
     - name: Configure and build winpthread
