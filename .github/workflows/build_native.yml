@@ -223,7 +223,7 @@ jobs:
       run: |
         cd $CACHE_PATH/gcc/build
         # the dir is already created
-        export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:`echo $CACHE_PATH/gcc/gmp/*/lib`:`echo $CACHE_PATH/gcc/mpfr/*/lib`:`echo $CACHE_PATH/gcc/mpc/*/lib`"
+        export LD_LIBRARY_PATH="$PREFIX/lib:$LD_LIBRARY_PATH"
         (make -j$(nproc) && make install) || (
         ret=$?
         echo "gcc_cfg_log::::-"
