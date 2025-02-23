@@ -228,6 +228,7 @@ jobs:
         ret=$?
         echo "gcc_cfg_log::::-"
         cat config.log || echo "Failed to find GCC cfg log"
+        find ${{ github.workspace }} -name 'libmpc.so'
         exit $ret
         )
     - name: Upload artifacts
