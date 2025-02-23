@@ -184,13 +184,13 @@ jobs:
         cd $CACHE_PATH/gcc
         ./contrib/download_prerequisites
         echo "gmp::::-"
-        find gmp -maxdepth 2 -ls
+        find gmp -maxdepth 4 -ls
         echo "mpfr::::-"
-        find mpfr -maxdepth 2 -ls
+        find mpfr -maxdepth 4 -ls
         echo "mpc::::-"
-        find mpc -maxdepth 2 -ls
+        find mpc -maxdepth 4 -ls
         echo "thisDir::::-this"
-        find . -maxdepth 2 -ls
+        find . -maxdepth 3 -ls
         #for i in mpc isl mpfr gmp; do
         #    ln -s "$SRC_PATH/gcc/$i" "$SRC_PATH/binutils/$i"
         #done
@@ -223,7 +223,7 @@ jobs:
       run: |
         cd $CACHE_PATH/gcc/build
         # the dir is already created
-        export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CACHE_PATH/gcc/gmp/lib:$CACHE_PATH/gcc/mpfr/lib:$CACHE_PATH/gcc/mpc/lib"
+        export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:`echo $CACHE_PATH/gcc/gmp/*/lib`:`echo $CACHE_PATH/gcc/mpfr/*/lib`:`echo $CACHE_PATH/gcc/mpc/*/lib`"
         make -j$(nproc)
         echo "gcc_cfg_log::::-"
         cat config.log || echo "Failed to find GCC cfg log"
