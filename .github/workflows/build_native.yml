@@ -211,7 +211,7 @@ jobs:
             --enable-languages=c,c++ --disable-multilib --disable-nls \
             --enable-threads=posix \
             --enable-static \
-            --enable-shared
+            --disable-shared
         make -j$(nproc) all-gcc
         make install-gcc
     - name: Configure and build MinGW-w64 C Runtime
@@ -234,12 +234,10 @@ jobs:
       run: |
         cd $CACHE_PATH/gcc/build
         # the dir is already created
-        export LD_LIBRARY_PATH="$PREFIX/lib:$LD_LIBRARY_PATH"
         (make -j$(nproc) && make install) || (
         ret=$?
         echo "gcc_cfg_log::::-"
         cat config.log || echo "Failed to find GCC cfg log"
-        find ${{ github.workspace }} -name 'libmpc.so'
         exit $ret
         )
     - name: Upload artifacts
