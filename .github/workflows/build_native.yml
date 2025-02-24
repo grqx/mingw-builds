@@ -160,7 +160,8 @@ jobs:
     - name: Clone repositories
       run: |
         cd $CACHE_PATH
-        git clone --progress --depth 1 -b "${{ inputs.MINGW_W64_BRANCH }}"  https://git.code.sf.net/p/mingw-w64/mingw-w64 mingw-w64
+        git clone --progress -b "${{ inputs.MINGW_W64_BRANCH }}"  https://git.code.sf.net/p/mingw-w64/mingw-w64 mingw-w64
+        # commit history needed for patch
         git clone --progress --depth 1 -b "${{ inputs.BINUTILS_BRANCH }}" https://sourceware.org/git/binutils-gdb.git binutils
         git clone --progress --depth 1 -b "${{ inputs.GCC_BRANCH }}" https://gcc.gnu.org/git/gcc.git gcc
     - name: Configure and build binutils
@@ -175,6 +176,24 @@ jobs:
     - name: Configure and build MinGW-w64 headers
       run: |
         cd $CACHE_PATH/mingw-w64/mingw-w64-headers
+        if git rev-parse --verify 3839e21b08807479a31d5a9764666f82ae2f0356 >/dev/null 2>&1; then
+        cat << 'EOF' > ${{ github.workspace }}/ctype.diff
+        diff --git a/mingw-w64-headers/crt/ctype.h b/mingw-w64-headers/crt/ctype.h
+        index 2c8499d4d..cd4c90b20 100644
+        --- a/mingw-w64-headers/crt/ctype.h
+        +++ b/mingw-w64-headers/crt/ctype.h
+        @@ -231,7 +231,6 @@ _CRTIMP int __cdecl ___mb_cur_max_func(void);
+         #define iswgraph(_c) (iswctype(_c,_PUNCT|_ALPHA|_DIGIT))
+         #define iswcntrl(_c) (iswctype(_c,_CONTROL))
+         #define iswascii(_c) ((unsigned)(_c) < 0x80)
+        -#define iswblank(_c) (iswctype(_c,_SPACE) || ((_c)=='\t'))
+         #if __MSVCRT_VERSION__ >= 0x800 || (__MSVCRT_VERSION__ == 0x600 && _WIN32_WINNT >= 0x0600)
+         # define _iswalpha_l(_c,_p) (_iswctype_l(_c,_ALPHA,_p))
+         # define _iswupper_l(_c,_p) (_iswctype_l(_c,_UPPER,_p))
+        EOF
+        git apply ${{ github.workspace }}/ctype.diff
+        echo "Applied ctype patch"
+        fi
         mkdir build && cd build
         ../configure --host=$CROSS_PREFIX --prefix=$PREFIX/$TARGET --build=$BUILD \
             --with-default-msvcrt=msvcrt
