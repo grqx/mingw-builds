@@ -206,7 +206,7 @@ jobs:
         #    ln -s "$SRC_PATH/gcc/$i" "$SRC_PATH/binutils/$i"
         #done
         mkdir build && cd build
-        export PATH="$PATH:$BUILDER_PATH/bin"
+        echo PATH="$PATH:$BUILDER_PATH/bin" | tee -a "${GITHUB_ENV}"
         ../configure --host=$CROSS_PREFIX --target=$TARGET --prefix=$PREFIX --build="$BUILD" \
             --enable-languages=c,c++ --disable-multilib --disable-nls \
             --enable-threads=posix \
