@@ -17,9 +17,14 @@ on:
         type: string
         required: true
         default: 'releases/gcc-14'
+      run_id:
+        description: 'The GA workflow run-id in the repo with an artifact called mingw_x86_64'
+        type: string
+        required: false
 jobs:
-  # build_linux:
-  #   uses: ./.github/workflows/build.yml
+  build_linux:
+    uses: ./.github/workflows/build.yml
+    if: "${{ github.event.inputs.run_id != '' }}"
   build_windows:
     # needs: [build_linux]
     runs-on: ubuntu-latest
@@ -54,7 +59,7 @@ jobs:
         path: ${{ env.BUILDER_PATH }}
         # rm args below when using fresh builds
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        run-id: 13406824267
+        run-id: ${{ github.event.inputs.run_id != '' && github.event.inputs.run_id || github.run_id }}
     - name: Set build flags
       run: |
         ls -R $BUILDER_PATH/bin
