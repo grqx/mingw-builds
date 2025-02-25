@@ -178,7 +178,8 @@ jobs:
     - name: Configure and build MinGW-w64 headers
       run: |
         cd $CACHE_PATH/mingw-w64/mingw-w64-headers
-        if git rev-parse --verify 3839e21b08807479a31d5a9764666f82ae2f0356 >/dev/null 2>&1; then
+        if git merge-base --is-ancestor 3839e21b08807479a31d5a9764666f82ae2f0356 HEAD && \
+        ! git merge-base --is-ancestor d7e849d00cf44991a4a7131ba1dfda982ffb2cb0 HEAD; then
         cat << 'EOF' > ${{ github.workspace }}/ctype.diff
         diff --git a/mingw-w64-headers/crt/ctype.h b/mingw-w64-headers/crt/ctype.h
         index 2c8499d4d..cd4c90b20 100644
@@ -194,7 +195,7 @@ jobs:
          # define _iswupper_l(_c,_p) (_iswctype_l(_c,_UPPER,_p))
         EOF
         git apply ${{ github.workspace }}/ctype.diff
-        echo "Applied ctype patch"
+        echo "Applied ctype.h patch"
         fi
         mkdir build && cd build
         ../configure --host=$CROSS_PREFIX --prefix=$PREFIX/$TARGET --build=$BUILD \
